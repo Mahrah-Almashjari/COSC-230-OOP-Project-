@@ -2,7 +2,7 @@ package model;
 
 import java.io.Serializable;
 
-public class AccessRequest implements Serializable {
+public final class AccessRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -10,67 +10,59 @@ public class AccessRequest implements Serializable {
         PENDING, APPROVED, REJECTED
     }
 
-    private String studentId;
-    private String name;
-    private String email;
-    private String phone;
-    private String password;
-    private Status status;
+    private final String studentId;
+    private final String name;
+    private final String email;
+    private final String phone;
+    private final String password;
 
-    //Store a new registration request
+    private Status status = Status.PENDING;
+    private Student approvedStudent;
+
+    //Store registration details
     public AccessRequest(String studentId, String name, String email,
                          String phone, String password) {
-        this.studentId = requireText(studentId);
-        this.name = requireText(name);
-        this.email = requireText(email);
-        this.phone = requireText(phone);
-        requireText(password);
-        this.password = password;
+        this.studentId = User.requireText(
+                studentId, "University ID");
 
         if (this.studentId.equalsIgnoreCase("admin")) {
-            throw new IllegalArgumentException("This username is reserved.");
+            throw new IllegalArgumentException(
+                    "This username is reserved.");
         }
 
-        if (!this.email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
-            throw new IllegalArgumentException("Enter a valid email.");
-        }
+        this.name = User.requireText(name, "Name");
+        this.email = User.requireEmail(email);
+        this.phone = User.requirePhone(phone);
 
-        if (!this.phone.matches("\\+?[0-9]{7,15}")) {
-            throw new IllegalArgumentException("Enter a valid phone number.");
-        }
-
-        status = Status.PENDING;
-    }
-
-    //Check that a field is filled
-    private String requireText(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException("All fields are required.");
-        }
-
-        return value.trim();
+        User.requireText(password, "Password");
+        this.password = password;
     }
 
     //Approve once and create the student
-    Student approve() {
-        if (status != Status.PENDING) {
-            throw new IllegalStateException("Request already reviewed.");
-        }
+    Student approve(int minutes) {
+        requirePending();
 
         Student student = new Student(
-                studentId, password, name, email, phone);
+                studentId, password, name, email, phone, minutes);
 
+        approvedStudent = student;
         status = Status.APPROVED;
+
         return student;
     }
 
     //Reject a pending request
     void reject() {
-        if (status != Status.PENDING) {
-            throw new IllegalStateException("Request already reviewed.");
-        }
-
+        requirePending();
         status = Status.REJECTED;
+    }
+
+    //Prevent repeated reviews
+    private void requirePending() {
+        if (status != Status.PENDING) {
+            throw new IllegalStateException(
+                    "Request already reviewed.");
+        }
     }
 
     //Return the university ID
@@ -78,7 +70,7 @@ public class AccessRequest implements Serializable {
         return studentId;
     }
 
-    //Return the student's name
+    //Return the student name
     public String getName() {
         return name;
     }
@@ -101,5 +93,10 @@ public class AccessRequest implements Serializable {
     //Return the request status
     public Status getStatus() {
         return status;
+    }
+
+    //Return the approved account
+    public Student getApprovedStudent() {
+        return approvedStudent;
     }
 }
