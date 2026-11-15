@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TimeAllowance implements Serializable {
+public final class TimeAllowance implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -13,16 +13,24 @@ public class TimeAllowance implements Serializable {
     private int used;
     private int reserved;
 
-    private ArrayList<String> grantHistory = new ArrayList<>();
+    private final ArrayList<String> grantHistory = new ArrayList<>();
 
     //Start with 100 GPU minutes
     public TimeAllowance() {
-        allocated = 100;
-        used = 0;
-        reserved = 0;
+        this(100);
     }
 
-    //Return total allocated minutes
+    //Set the initial allowance
+    public TimeAllowance(int minutes) {
+        if (minutes < 0) {
+            throw new IllegalArgumentException(
+                    "Allowance cannot be negative.");
+        }
+
+        allocated = minutes;
+    }
+
+    //Return allocated minutes
     public int getAllocated() {
         return allocated;
     }
@@ -32,7 +40,7 @@ public class TimeAllowance implements Serializable {
         return used;
     }
 
-    //Return minutes held for jobs
+    //Return reserved minutes
     public int getReserved() {
         return reserved;
     }
@@ -42,23 +50,26 @@ public class TimeAllowance implements Serializable {
         return allocated - used - reserved;
     }
 
-    //Hold minutes for an accepted job
-    public void reserve(int minutes) {
-        if (minutes <= 0) {
-            throw new IllegalArgumentException("Minutes must be positive.");
-        }
+    //Return recorded allowance changes
+    public List<String> getGrantHistory() {
+        return Collections.unmodifiableList(grantHistory);
+    }
 
-        if (minutes > getAvailable()) {
-            throw new IllegalArgumentException("Not enough available minutes.");
+    //Reserve minutes for an accepted job
+    void reserve(int minutes) {
+        if (minutes <= 0 || minutes > getAvailable()) {
+            throw new IllegalArgumentException(
+                    "Not enough available GPU minutes.");
         }
 
         reserved += minutes;
     }
 
-    //Release reserved minutes and charge runtime
-    public void settle(int duration, int runtime) {
+    //Release the reservation and charge runtime
+    void settle(int duration, int runtime) {
         if (duration <= 0 || duration > reserved) {
-            throw new IllegalArgumentException("Invalid reserved duration.");
+            throw new IllegalArgumentException(
+                    "Invalid reserved duration.");
         }
 
         if (runtime < 0 || runtime > duration) {
@@ -70,21 +81,35 @@ public class TimeAllowance implements Serializable {
     }
 
     //Add extra minutes with a reason
-    public void grantTime(int minutes, String reason) {
+    void grantTime(int minutes, String reason) {
+        reason = User.requireText(reason, "Reason");
+
         if (minutes <= 0) {
-            throw new IllegalArgumentException("Minutes must be positive.");
+            throw new IllegalArgumentException(
+                    "Minutes must be positive.");
         }
 
-        if (reason == null || reason.trim().isEmpty()) {
-            throw new IllegalArgumentException("A reason is required.");
-        }
+        int total = Math.addExact(allocated, minutes);
 
-        allocated = Math.addExact(allocated, minutes);
-        grantHistory.add(minutes + " minutes: " + reason.trim());
+        grantHistory.add(
+                "admin | +" + minutes + " minutes | " + reason);
+
+        allocated = total;
     }
 
-    //Return recorded grants
-    public List<String> getGrantHistory() {
-        return Collections.unmodifiableList(grantHistory);
+    //Adjust the total allowance safely
+    void setAllocation(int minutes, String reason) {
+        reason = User.requireText(reason, "Reason");
+
+        if (minutes < used + reserved) {
+            throw new IllegalArgumentException(
+                    "Allocation cannot be below used plus reserved.");
+        }
+
+        grantHistory.add(
+                "admin | " + allocated + " -> " + minutes
+                        + " | " + reason);
+
+        allocated = minutes;
     }
 }
