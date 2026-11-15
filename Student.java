@@ -1,36 +1,30 @@
 package model;
 
-public class Student extends User {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+
+public final class Student extends User {
 
     private static final long serialVersionUID = 1L;
 
-    private String name;
-    private String email;
-    private String phone;
-    private TimeAllowance allowance;
+    private final String name;
+    private final String email;
+    private final String phone;
+    private final TimeAllowance allowance;
 
-    //Set student details and default allowance
-    public Student(String studentId, String password, String name,
-                   String email, String phone) {
+    private final ArrayList<Job> jobs = new ArrayList<>();
+
+    //Create an approved student account
+    Student(String studentId, String password, String name,
+            String email, String phone, int minutes) {
         super(studentId, password);
 
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name is required.");
-        }
-
-        if (email == null
-                || !email.trim().matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
-            throw new IllegalArgumentException("Enter a valid email.");
-        }
-
-        if (phone == null || !phone.trim().matches("\\+?[0-9]{7,15}")) {
-            throw new IllegalArgumentException("Enter a valid phone number.");
-        }
-
-        this.name = name.trim();
-        this.email = email.trim();
-        this.phone = phone.trim();
-        allowance = new TimeAllowance();
+        this.name = requireText(name, "Name");
+        this.email = requireEmail(email);
+        this.phone = requirePhone(phone);
+        allowance = new TimeAllowance(minutes);
     }
 
     //Return the university ID
@@ -38,7 +32,7 @@ public class Student extends User {
         return getUsername();
     }
 
-    //Return the student's name
+    //Return the student name
     public String getName() {
         return name;
     }
@@ -53,14 +47,69 @@ public class Student extends User {
         return phone;
     }
 
-    //Return the student's allowance
+    //Return the student allowance
     public TimeAllowance getAllowance() {
         return allowance;
     }
 
-    //Identify the user as a student
+    //Return the student role
     @Override
     public String getRole() {
         return "Student";
+    }
+
+    //Add an accepted job to history
+    void addJob(Job job) {
+        if (job == null || job.getStudent() != this) {
+            throw new IllegalArgumentException("Invalid job owner.");
+        }
+
+        if (findJob(job.getJobId()) != null) {
+            throw new IllegalArgumentException(
+                    "Job ID already exists.");
+        }
+
+        jobs.add(job);
+    }
+
+    //Return the student job history
+    public List<Job> getJobs() {
+        return Collections.unmodifiableList(jobs);
+    }
+
+    //Find a job by ID
+    public Job findJob(String jobId) {
+        for (Job job : jobs) {
+            if (job.getJobId().equals(jobId)) {
+                return job;
+            }
+        }
+
+        return null;
+    }
+
+    //Search the student's jobs
+    public List<Job> searchJobs(String text) {
+        if (text == null) {
+            throw new IllegalArgumentException(
+                    "Search text is required.");
+        }
+
+        String query = text.trim().toLowerCase(Locale.ROOT);
+        List<Job> found = new ArrayList<>();
+
+        for (Job job : jobs) {
+            String details = job.getJobId() + " "
+                    + job.getTitle() + " "
+                    + job.getApplicationName() + " "
+                    + job.getDescription() + " "
+                    + job.getStatus();
+
+            if (details.toLowerCase(Locale.ROOT).contains(query)) {
+                found.add(job);
+            }
+        }
+
+        return found;
     }
 }
