@@ -9,7 +9,7 @@ public class Student extends User {
     private String phone;
     private TimeAllowance allowance;
 
-    //Set student details and default allowance.
+    //Set student details and default allowance
     public Student(String studentId, String password, String name,
                    String email, String phone) {
         super(studentId, password);
@@ -33,32 +33,32 @@ public class Student extends User {
         allowance = new TimeAllowance();
     }
 
-    //Return the university ID.
+    //Return the university ID
     public String getStudentId() {
         return getUsername();
     }
 
-    //Return the student's name.
+    //Return the student's name
     public String getName() {
         return name;
     }
 
-    //Return the email.
+    //Return the email
     public String getEmail() {
         return email;
     }
 
-    //Return the phone number.
+    //Return the phone number
     public String getPhone() {
         return phone;
     }
 
-    //Return the student's allowance.
+    //Return the student's allowance
     public TimeAllowance getAllowance() {
         return allowance;
     }
 
-    //Identify the user as a student.
+    //Identify the user as a student
     @Override
     public String getRole() {
         return "Student";
