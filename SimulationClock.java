@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -6,31 +7,48 @@ import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-public class SimulationClock extends JFrame implements ActionListener{
+import java.awt.FlowLayout;
+
+public class SimulationClock extends JFrame implements ActionListener, ChangeListener{
 	
 	//Setting the private attributes for the clock
 	private int hour;
 	private int minute;
 	private int second;
 	JLabel title, message, dateTitle, timeTitle;
-	JSpinner SpinnerDateModel; 
+	JSpinner date, time; 
 	JButton startClock;
+	Date DateTime;
 	
 	
 	public SimulationClock() {
 		title = new JLabel ("Set the starting date and time",SwingConstants.LEFT);
 		title.setFont(new Font("Ariel",Font.BOLD,24));
 		message = new JLabel("This is done once. Afterwards, time moves only with +1 minute.",SwingConstants.LEFT);
+		message.setFont(new Font("Ariel",Font.PLAIN,14));
 		dateTitle = new JLabel ("Date",SwingConstants.LEFT);
 		timeTitle = new JLabel ("Time (24-hour)",SwingConstants.LEFT);
-		JSpinner date = new JSpinner( new SpinnerDateModel(new Date(),null,null, Calendar.DAY_OF_MONTH));
-		date.setEditor(new JSpinner.DateEditor(date,"dd/MM/yyyy HH:mm"));
+		date = new JSpinner( new SpinnerDateModel(new Date(),null,null, Calendar.DAY_OF_MONTH));
+		date.setEditor(new JSpinner.DateEditor(date,"dd/MM/yyyy"));
+		date.setPreferredSize(new Dimension(375,45));
+		JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		datePanel.add(date);
+		time = new JSpinner( new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+		time.setEditor(new JSpinner.DateEditor(time,"HH:mm"));
+		time.setPreferredSize(new Dimension(375,45));
+		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		timePanel.add(time);
 		startClock = new JButton("Start clock");
 		startClock.setPreferredSize(new Dimension(120,35));
-		JPanel panel = new JPanel();
-		panel.add(startClock);
+		startClock.setBackground(new Color(70,120,200));
+		startClock.setForeground(Color.WHITE);
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		buttonPanel.add(startClock);
 		
+		//Setting the layout of the pop-up
 		GridLayout Layout = new GridLayout(7,2);
 		
 		setLayout(Layout);
@@ -40,63 +58,23 @@ public class SimulationClock extends JFrame implements ActionListener{
 		add(new JLabel());
 		add(dateTitle);
 		add(timeTitle);
-		add(date);
+		add(datePanel);
+		add(timePanel);
 		add(new JLabel());
 		add(new JLabel());
 		add(new JLabel());
-		add(new JLabel());
-		add(startClock);
+		add(buttonPanel);
 		add(new JLabel());
 		add(new JLabel());
 		
+		date.addChangeListener((ChangeListener) this);
+		time.addChangeListener((ChangeListener) this);
+		startClock.addActionListener(this);
+		
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(300,600);
+		setSize(800,400);
 
-	}
-	
-	
-	//Parameterized clock time
-	public SimulationClock(int hr, int min, int sec) {
-		setTime(hr,min,sec);
-	}
-	
-	//Validating the time
-	public static boolean validTime(int hr, int min, int sec) {
-		return ((hr>=0 && hr<24) && (min>=0 && min<60) && (sec>=0 && sec<60));
-	}
-	
-	//Setting the time in the system.
-	public void setTime(int hr, int min, int sec) {
-		if (0<=hr && hr<24) {
-			hour = hr;
-		}
-		else {
-			hour = 0;
-		}
-		if (0<=min && min<60) {
-			minute = min;
-		}
-		else {
-			minute = 0;
-		}
-		if (0<=sec && sec<60) {
-			second = sec;
-		}
-		else {
-			second = 0;
-		}
-	}
-	
-	//Getting the clock attributes
-	public int getHours() {
-		return hour;
-	}
-	public int getMinutes() {
-		return minute;
-	}
-	public int getSeconds() {
-		return second;
 	}
 	
 	//Printing the time
@@ -140,8 +118,17 @@ public class SimulationClock extends JFrame implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.getSource()==startClock) {
+			dispose();
+		}
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		if (e.getSource()==date || e.getSource()==time) {
+			//Getting the value of DD/MM/YY HH/mm -- used date but time could have also worked.
+			DateTime = (Date) date.getValue();
+		}
 	}
 
 }
