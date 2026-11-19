@@ -77,13 +77,6 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 	public void advance() {
 		DateTime.plusMinutes(1);
 	}
-	
-	public static void main(String[] args) {
-
-		new SimulationClock();
-
-	}
-
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
