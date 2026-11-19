@@ -4,24 +4,20 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.time.LocalDateTime;
 
 import java.awt.FlowLayout;
 
 public class SimulationClock extends JFrame implements ActionListener, ChangeListener{
 	
 	//Setting the private attributes for the clock
-	private int hour;
-	private int minute;
-	private int second;
 	JLabel title, message, dateTitle, timeTitle;
 	JSpinner date, time; 
 	JButton startClock;
-	Date DateTime;
+	LocalDateTime DateTime;
 	
 	
 	public SimulationClock() {
@@ -31,12 +27,12 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 		message.setFont(new Font("Ariel",Font.PLAIN,14));
 		dateTitle = new JLabel ("Date",SwingConstants.LEFT);
 		timeTitle = new JLabel ("Time (24-hour)",SwingConstants.LEFT);
-		date = new JSpinner( new SpinnerDateModel(new Date(),null,null, Calendar.DAY_OF_MONTH));
+		date = new JSpinner( new SpinnerDateModel());
 		date.setEditor(new JSpinner.DateEditor(date,"dd/MM/yyyy"));
 		date.setPreferredSize(new Dimension(375,45));
 		JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		datePanel.add(date);
-		time = new JSpinner( new SpinnerDateModel(new Date(), null, null, Calendar.MINUTE));
+		time = new JSpinner( new SpinnerDateModel());
 		time.setEditor(new JSpinner.DateEditor(time,"HH:mm"));
 		time.setPreferredSize(new Dimension(375,45));
 		JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -77,43 +73,16 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 
 	}
 	
-	//Printing the time
-	public void printTime() {
-		if (hour < 10) {
-			System.out.print("0");
-		}
-		System.out.print(hour+":");
-		if (minute < 10) {
-			System.out.print("0");
-		}
-		System.out.print(minute+":");
-		if (second < 10) {
-			System.out.print("0");
-		}
-		System.out.print(second);
-	}
-	
 	//Increasing the clock by one
 	public void advance() {
-		second++;
-		if (second>59) {
-			second = 0;
-			minute ++;
-			if (minute>59) {
-				minute = 0;
-				hour++;
-				if (hour>23) {
-					hour=0;
-				}
-			}
-		}
+		DateTime.plusMinutes(1);
 	}
 	
 	public static void main(String[] args) {
 
 		new SimulationClock();
 
-		}
+	}
 
 
 	@Override
@@ -125,10 +94,7 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		if (e.getSource()==date || e.getSource()==time) {
-			//Getting the value of DD/MM/YY HH/mm -- used date but time could have also worked.
-			DateTime = (Date) date.getValue();
-		}
+		
 	}
 
 }
