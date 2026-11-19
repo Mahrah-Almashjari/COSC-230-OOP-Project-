@@ -1,4 +1,7 @@
 import java.util.*;
+import java.util.List;
+import javax.swing.*;
+import java.awt.*;
 
 public class Scheduler {
 	private List<Job> queue = new ArrayList<>();
@@ -9,7 +12,7 @@ public class Scheduler {
 	public Scheduler(SimulationClock Clock) {
 		clock = Clock;
 		
-		for (int i = 0; i<4; i++) {
+		for (int i = 1; i<5; i++) {
 			gpus[i]=new GPU(i);
 		}
 		
@@ -34,13 +37,25 @@ public class Scheduler {
 	
 	//Cancelling the job
 	public void cancel(Job job, User by, String why) {
-		queue.remove(job);
-		//ADD POP UP FOR THE CANCELLATION
+		if (queue.contains(job)) {
+			queue.remove(job);
+			job.cancel(by,why);
+		}
+		else {
+			for (int i=0; i<4;i++) {
+				if (gpus[i].getCurrentJob()==job) {
+					gpus[i].cancel(by,why);
+					gpus[i].release();
+					break;
+				}
+			}
+		}
 		for (int i=0; i<4;i++) {
 			if (gpus[i].isFree() && !queue.isEmpty()) {
 				Job newJob = queue.remove(0);
 				gpus[i].assign(newJob);
+				}
 			}
-		}
+		
 	}
 }
