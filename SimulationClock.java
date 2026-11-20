@@ -70,9 +70,19 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(800,400);
-
+		
+		
+		
 	}
 	
+	public LocalDateTime getDateTime() {
+		return DateTime;
+	}
+
+	public void setDateTime(LocalDateTime dateTime) {
+		DateTime = dateTime;
+	}
+
 	//Increasing the clock by one
 	public void advance() {
 		DateTime.plusMinutes(1);
