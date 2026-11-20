@@ -21,11 +21,10 @@ public class Scheduler {
 	//Submitting the job and assigning it to the person
 	public void submit (Job job) {
 		queue.add(job);
-		
 		for (int i=0; i<4;i++) {
 			if (gpus[i].isFree() && !queue.isEmpty()) {
 				Job newJob = queue.remove(0);
-				gpus[i].assign(newJob);
+				gpus[i].assign(newJob, clock.getDateTime());
 			}
 		}
 	}
@@ -39,12 +38,12 @@ public class Scheduler {
 	public void cancel(Job job, User by, String why) {
 		if (queue.contains(job)) {
 			queue.remove(job);
-			job.cancel(by,why);
+			job.cancel(by,why,clock.getDateTime());
 		}
 		else {
 			for (int i=0; i<4;i++) {
 				if (gpus[i].getCurrentJob()==job) {
-					gpus[i].cancel(by,why);
+					job.cancel(by,why,clock.getDateTime());
 					gpus[i].release();
 					break;
 				}
@@ -53,9 +52,8 @@ public class Scheduler {
 		for (int i=0; i<4;i++) {
 			if (gpus[i].isFree() && !queue.isEmpty()) {
 				Job newJob = queue.remove(0);
-				gpus[i].assign(newJob);
+				gpus[i].assign(newJob, clock.getDateTime());
 				}
 			}
-		
 	}
 }
