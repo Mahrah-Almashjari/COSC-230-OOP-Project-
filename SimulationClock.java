@@ -1,27 +1,18 @@
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.prefs.Preferences;
 import java.util.Date;
-import java.awt.FlowLayout;
+import java.text.ParseException;
 
-public class SimulationClock extends JFrame implements ActionListener, ChangeListener{
+public class SimulationClock extends JFrame implements ActionListener {
 	
 	//Setting the private attributes for the clock
 	JLabel title, message, dateTitle, timeTitle;
 	JSpinner date, time; 
 	JButton startClock;
-	LocalDateTime DateTime;
+	private LocalDateTime DateTime;
 	private Preferences prefs = Preferences.userNodeForPackage(SimulationClock.class);
 	
 	
@@ -34,9 +25,9 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 		}
 		else {
 			title = new JLabel ("Set the starting date and time",SwingConstants.LEFT);
-			title.setFont(new Font("Ariel",Font.BOLD,24));
+			title.setFont(new Font("Arial",Font.BOLD,24));
 			message = new JLabel("This is done once. Afterwards, time moves only with +1 minute.",SwingConstants.LEFT);
-			message.setFont(new Font("Ariel",Font.PLAIN,14));
+			message.setFont(new Font("Arial",Font.PLAIN,14));
 			dateTitle = new JLabel ("Date",SwingConstants.LEFT);
 			timeTitle = new JLabel ("Time (24-hour)",SwingConstants.LEFT);
 			date = new JSpinner( new SpinnerDateModel());
@@ -75,13 +66,11 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 			add(new JLabel());
 			add(new JLabel());
 			
-			date.addChangeListener((ChangeListener) this);
-			time.addChangeListener((ChangeListener) this);
 			startClock.addActionListener(this);
 			
-			setVisible(true);
-			setDefaultCloseOperation(EXIT_ON_CLOSE);
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			setSize(800,400);
+			setVisible(true);
 		}
 		
 		
@@ -91,29 +80,29 @@ public class SimulationClock extends JFrame implements ActionListener, ChangeLis
 		return DateTime;
 	}
 
-	public void setDateTime(LocalDateTime dateTime) {
-		DateTime = dateTime;
-	}
-
 	//Increasing the clock by one
 	public void advance() {
-		DateTime.plusMinutes(1);
+		DateTime = DateTime.plusMinutes(1);
+		prefs.put("time", DateTime.toString()); //Since LocalDateTime is immutable, assign the result back
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource()==startClock) {
-			LocalTime Time = ((Date) time.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-			LocalDate Date = ((Date) date.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-			DateTime = LocalDateTime.of(Date, Time);
-			prefs.put("time", DateTime.toString());
-			dispose();
+			try {
+				date.commitEdit();
+				time.commitEdit();
+				LocalTime Time = ((Date) time.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+				LocalDate Date = ((Date) date.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+				DateTime = LocalDateTime.of(Date, Time);
+				prefs.put("time", DateTime.toString());
+				dispose();
+			}
+			catch (ParseException exc) {
+				JOptionPane.showMessageDialog(this,"Enter a valid date and time.");
+			}
+			
 		}
-	}
-
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		
 	}
 
 }
