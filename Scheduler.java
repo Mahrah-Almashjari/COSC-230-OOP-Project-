@@ -1,12 +1,17 @@
 import java.util.*;
 import java.util.List;
+import java.util.prefs.*;
 import javax.swing.*;
 import java.awt.*;
+import java.time.*;
 
 public class Scheduler {
 	private List<Job> queue = new ArrayList<>();
 	private GPU[] gpus = new GPU[4];
 	private SimulationClock clock;
+	private double utilization, simulatedMinutes;
+	private Preferences prefs = Preferences.userNodeForPackage(Scheduler.class);
+	private int busyGpuCount=0;
 	
 	//Creating the GPU objects in the array
 	public Scheduler(SimulationClock Clock) {
@@ -14,6 +19,7 @@ public class Scheduler {
 		for (int i = 0; i<4; i++) {
 			gpus[i]=new GPU(i+1);
 		}
+		busyGpuCount = prefs.getInt("busyGpuMinutes", 0);
 		
 	}
 	
@@ -32,6 +38,10 @@ public class Scheduler {
 	public void advanceMinute() {
 		clock.advance();
 		for (int i=0; i<4;i++) {
+			if (!gpus[i].isFree()) {
+				busyGpuCount++;
+				
+			}
 			Job job = gpus[i].getCurrentJob();
 			if (job!=null) {
 				if (job.getRemainingRuntime(clock.getDateTime())<=0) {
@@ -46,6 +56,7 @@ public class Scheduler {
 						gpus[i].assign(newJob, clock.getDateTime());
 					}
 		}
+		prefs.putInt("busyGpuMinutes", busyGpuCount);
 	}
 	
 	//Cancelling the job
@@ -69,5 +80,16 @@ public class Scheduler {
 				gpus[i].assign(newJob, clock.getDateTime());
 				}
 			}
+	}
+	
+	public double getUtilization() {
+		simulatedMinutes = Duration.between(clock.getInitialDateTime(),clock.getDateTime()).toMinutes();
+		if (simulatedMinutes==0) {
+			return 0.0;
+		}
+		else {
+			utilization = ((double)busyGpuCount/(4*simulatedMinutes))*100;
+			return utilization;
+		}
 	}
 }
