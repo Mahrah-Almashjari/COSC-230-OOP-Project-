@@ -2,10 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 public class Login extends JFrame implements ActionListener{
+	private final AccountService accountService;
 	JButton loginButton, registerButton;
 	JTextField usernameField; JPasswordField passwordField;
 	JLabel usernameLabel, passwordLabel, messageLabel;
-	public Login() {
+	public Login(AccountService accountService) {
+    	this.accountService = accountService;
 		usernameField = new JTextField();
 		passwordField = new JPasswordField();
 		
@@ -76,6 +78,8 @@ public class Login extends JFrame implements ActionListener{
 	public static void main(String[] args) {
 		User[] accounts = new User[100];
 	    AccessRequest[] requests = new AccessRequest[100];
+		accounts[0] = new Administrator();
+
 
 	    AccountService service =
 	            new AccountService(accounts, requests);
@@ -89,6 +93,7 @@ public class Login extends JFrame implements ActionListener{
 	        new Registration(accountService).setVisible(true);
 	    }
 		else if (e.getSource() == loginButton) {
+			messageLabel.setText(" ");
 	        String username = usernameField.getText().trim();
 	        char[] password = passwordField.getPassword();
 
@@ -100,7 +105,8 @@ public class Login extends JFrame implements ActionListener{
         User user = accountService.login(username, password);
 
         if (user == null) {
-            JOptionPane.showMessageDialog(this,"Invalid credentials or account not approved.");
+            messageLabel.setText(accountService.getLastMessage());
+    		pack();
             return;
         }
 
