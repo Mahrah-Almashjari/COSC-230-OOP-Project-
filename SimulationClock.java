@@ -12,13 +12,18 @@ public class SimulationClock extends JFrame implements ActionListener {
 	JLabel title, message, dateTitle, timeTitle;
 	JSpinner date, time; 
 	JButton startClock;
-	private LocalDateTime DateTime;
+	private LocalDateTime DateTime, initialDateTime;
 	private Preferences prefs = Preferences.userNodeForPackage(SimulationClock.class);
 	
 	
 	public SimulationClock() {
 		
 		String saved = prefs.get("time", null);
+		String savedInitial = prefs.get("initialTime", null);
+		
+		if (savedInitial!=null) {
+			initialDateTime = LocalDateTime.parse(savedInitial);
+		}
 		
 		if (saved!=null) {
 			DateTime = LocalDateTime.parse(saved);
@@ -80,12 +85,16 @@ public class SimulationClock extends JFrame implements ActionListener {
 		return DateTime;
 	}
 
+	public LocalDateTime getInitialDateTime() {
+		return initialDateTime;
+	}
+
 	//Increasing the clock by one
 	public void advance() {
 		DateTime = DateTime.plusMinutes(1);
 		prefs.put("time", DateTime.toString()); //Since LocalDateTime is immutable, assign the result back
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource()==startClock) {
@@ -96,6 +105,8 @@ public class SimulationClock extends JFrame implements ActionListener {
 				LocalDate Date = ((Date) date.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				DateTime = LocalDateTime.of(Date, Time);
 				prefs.put("time", DateTime.toString());
+				initialDateTime = DateTime;
+				prefs.put("initialTime", initialDateTime.toString());
 				dispose();
 			}
 			catch (ParseException exc) {
