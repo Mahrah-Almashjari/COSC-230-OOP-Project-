@@ -22,9 +22,7 @@ public class Login extends JFrame implements ActionListener{
 		
 		JPanel form = new JPanel();
 		form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
-		//form.setBackground(Color.WHITE);
 
-		// Padding: top, left, bottom, right.
 		form.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
 		JLabel title = new JLabel("GPU Utilization Management");
@@ -70,7 +68,6 @@ public class Login extends JFrame implements ActionListener{
 		setLocationRelativeTo(null);
 		setVisible(true);
 		
-		
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 	}
@@ -81,10 +78,8 @@ public class Login extends JFrame implements ActionListener{
 		accounts[0] = new Administrator();
 
 
-	    AccountService service =
-	            new AccountService(accounts, requests);
-
-	        new Login(service);
+	    AccountService service = new AccountService(accounts, requests);
+	    new Login(service);
 	}
 	
 	@Override
