@@ -16,6 +16,13 @@ public class StudentDashboard extends JFrame implements ActionListener {
     private final Scheduler scheduler;
     private final SimulationClock clock;
 
+    private FileManager fileManager;
+
+    // Login supplies the same file manager to every screen.
+    public void setFileManager(FileManager fileManager) {
+    this.fileManager = fileManager;
+}
+
     // Header components
     private JLabel timeLabel;
     private JButton logoutButton;
