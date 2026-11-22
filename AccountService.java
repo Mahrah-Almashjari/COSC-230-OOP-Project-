@@ -6,6 +6,8 @@ import model.User;
 import java.util.Arrays;
 import java.util.Locale;
 import java.time.*;
+import java.io.*;
+
 
 /** Login and registration logic using shared arrays; no Swing code. */
 public class AccountService {
