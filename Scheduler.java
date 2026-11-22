@@ -4,8 +4,10 @@ import java.util.prefs.*;
 import javax.swing.*;
 import java.awt.*;
 import java.time.*;
+import java.io.*;
 
 public class Scheduler {
+	private long nextJobNumber = 101;
 	private List<Job> queue = new ArrayList<>();
 	private GPU[] gpus = new GPU[4];
 	private SimulationClock clock;
@@ -182,6 +184,14 @@ public class Scheduler {
     	}
     	return result;
 	}
+	
+	//Write live state using the same stream as accounts and requests.
+	 public void saveStorageState(ObjectOutputStream out) throws IOException {
+	     out.writeObject(queue);
+	     out.writeObject(gpus);
+	     out.writeInt(busyGpuCount);
+	     out.writeLong(nextJobNumber);
+	 }
 
 	//getter for GPUs
 	public GPU[] getGpus() {
