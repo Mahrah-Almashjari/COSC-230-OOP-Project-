@@ -53,7 +53,7 @@ public class AccountService {
 
         User user = findAccount(username);
 
-        // Your AccessRequest stores the Student created on approval.
+        //AccessRequest stores the Student created on approval.
         if (user == null && request != null
                 && request.getStatus() == AccessRequest.Status.APPROVED) {
             user = request.getApprovedStudent();
