@@ -12,7 +12,7 @@ public class Scheduler {
 	private GPU[] gpus = new GPU[4];
 	private SimulationClock clock;
 	private double utilization, simulatedMinutes;
-	private Preferences prefs = Preferences.userNodeForPackage(Scheduler.class);
+	busyGpuCount = 0;
 	private int busyGpuCount=0;
 	Map<Job, LocalDateTime> start = new HashMap<>();
 
@@ -32,7 +32,8 @@ public class Scheduler {
 				size,
 				now);
 
-		submit(job); 
+		submit(job);
+		nextJobNumber++;
 		return job;
 	}
 
@@ -51,13 +52,14 @@ public class Scheduler {
 		for (int i = 0; i<4; i++) {
 			gpus[i]=new GPU(i+1);
 		}
-		busyGpuCount = prefs.getInt("busyGpuMinutes", 0);
+		busyGpuCount = 0;
 		
 	}
 	
 	//Submitting the job and assigning it to the person
 	public void submit (Job job) {
 		queue.add(job);
+		queue.sort(null);
 		for (int i=0; i<4;i++) {
 			if (gpus[i].isFree() && !queue.isEmpty()) {
 				Job newJob = queue.remove(0);
@@ -94,8 +96,8 @@ public class Scheduler {
 	//Cancelling the job
 	public void cancel(Job job, User by, String why) {
 		if (queue.contains(job)) {
+			job.cancel(by, why, clock.getDateTime());
 			queue.remove(job);
-			job.cancel(by,why,clock.getDateTime());
 		}
 		else {
 			for (int i=0; i<4;i++) {
@@ -158,7 +160,9 @@ public class Scheduler {
 	}
 	
 	public List<Job> queueInFcfsOrder() {
-		return new ArrayList<>(queue);
+		List<Job> ordered = new ArrayList<>(queue);
+    	ordered.sort(null);
+    	return ordered;
 	}
 	
 	//Predicting when a queued job starts
