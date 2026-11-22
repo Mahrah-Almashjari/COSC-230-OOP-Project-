@@ -182,6 +182,11 @@ public class Scheduler {
     	}
     	return result;
 	}
+
+	//getter for GPUs
+	public GPU[] getGpus() {
+    return gpus.clone();
+}
 ```
 
 }
