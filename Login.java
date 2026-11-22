@@ -156,7 +156,8 @@ public class Login extends JFrame implements ActionListener{
             passwordField.setText("");
             AdminDashboard dashboard = new AdminDashboard(
                     (Administrator) user, accountService, scheduler, clock, this);
-            dashboard.setSaveAction(() -> fileManager.saveWithMessage(dashboard));
+			// Give the admin screen the shared file manager.
+            dashboard.setFileManager(fileManager);
             dashboard.setVisible(true);
             setVisible(false);
         } else if (user instanceof Student) {
