@@ -96,10 +96,10 @@ public class AdminDashboard extends JFrame implements ActionListener {
         refreshTimer.start();
     }
 
-    /** Optional storage connection; the action must save the shared application state. */
-    public void setSaveAction(Runnable saveAction) {
-        this.saveAction = saveAction;
-    }
+    // Receive the shared file manager from Login.
+    public void setFileManager(FileManager fileManager) {
+    this.fileManager = fileManager;
+}
 
     private JPanel createHeader() {
         JPanel header = new JPanel(new BorderLayout(12, 8));
@@ -545,14 +545,13 @@ public class AdminDashboard extends JFrame implements ActionListener {
         refreshAll();
         messageLabel.setForeground(new Color(25, 115, 50));
         messageLabel.setText(message);
-        // The full file-storage implementation supplies this optional callback.
-        if (saveAction != null) {
-            try { saveAction.run(); }
-            catch (RuntimeException ex) {
-                showError("The change was applied, but saving failed: " + ex.getMessage());
-            }
-        }
+
+        // Save the administrator's changes.
+        if (fileManager != null) {
+        fileManager.saveWithMessage(this);
     }
+        }
+    
 
     private void showError(String message) {
         messageLabel.setForeground(Color.RED.darker()); messageLabel.setText(message);
