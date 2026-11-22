@@ -98,4 +98,7 @@ public final class GPU implements Serializable {
 
         return finish;
     }
+    public GPU[] getGpus() {
+    return gpus.clone();
+}
 }
