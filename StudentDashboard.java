@@ -437,7 +437,11 @@ public class StudentDashboard extends JFrame implements ActionListener {
         //if user does confirm, submit job and clear fields
         try {
             scheduler.submit(student, title, app, desc, size);
-            // Connect the project's save operation here after successful submission.
+
+            // Save the submitted job and updated allowance.
+        if (fileManager != null) {
+            fileManager.saveWithMessage(this);
+        }
             titleField.setText("");
             appField.setText("");
             descriptionArea.setText("");
