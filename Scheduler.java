@@ -32,6 +32,15 @@ public class Scheduler {
 		submit(job); 
 		return job;
 	}
+
+	//returns position in queue
+	public int getQueuePosition(Job job) {
+	    int index = queue.indexOf(job);
+	    if (index == -1) {
+	        return 0;
+	    }
+	    return index + 1;
+	}
 	
 	//Creating the GPU objects in the array
 	public Scheduler(SimulationClock Clock) {
