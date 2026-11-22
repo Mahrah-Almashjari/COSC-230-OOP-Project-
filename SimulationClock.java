@@ -30,53 +30,7 @@ public class SimulationClock extends JFrame implements ActionListener {
 			DateTime = LocalDateTime.parse(saved);
 		}
 		else {
-			title = new JLabel ("Set the starting date and time",SwingConstants.LEFT);
-			title.setFont(new Font("Arial",Font.BOLD,24));
-			message = new JLabel("This is done once. Afterwards, time moves only with +1 minute.",SwingConstants.LEFT);
-			message.setFont(new Font("Arial",Font.PLAIN,14));
-			dateTitle = new JLabel ("Date",SwingConstants.LEFT);
-			timeTitle = new JLabel ("Time (24-hour)",SwingConstants.LEFT);
-			date = new JSpinner( new SpinnerDateModel());
-			date.setEditor(new JSpinner.DateEditor(date,"dd/MM/yyyy"));
-			date.setPreferredSize(new Dimension(375,45));
-			JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			datePanel.add(date);
-			time = new JSpinner( new SpinnerDateModel());
-			time.setEditor(new JSpinner.DateEditor(time,"HH:mm"));
-			time.setPreferredSize(new Dimension(375,45));
-			JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			timePanel.add(time);
-			startClock = new JButton("Start clock");
-			startClock.setPreferredSize(new Dimension(120,35));
-			startClock.setBackground(new Color(70,120,200));
-			startClock.setForeground(Color.WHITE);
-			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			buttonPanel.add(startClock);
-			
-			//Setting the layout of the pop-up
-			GridLayout Layout = new GridLayout(7,2);
-			
-			setLayout(Layout);
-			add(title);
-			add(new JLabel());
-			add(message);
-			add(new JLabel());
-			add(dateTitle);
-			add(timeTitle);
-			add(datePanel);
-			add(timePanel);
-			add(new JLabel());
-			add(new JLabel());
-			add(new JLabel());
-			add(buttonPanel);
-			add(new JLabel());
-			add(new JLabel());
-			
-			startClock.addActionListener(this);
-			
-			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			setSize(800,400);
-			setVisible(true);
+			    showSetupWindow();
 		}
 		
 		
@@ -147,5 +101,52 @@ public class SimulationClock extends JFrame implements ActionListener {
 				        toFront();
 				        return;
 				    }
-
+				 title = new JLabel ("Set the starting date and time",SwingConstants.LEFT);
+			title.setFont(new Font("Arial",Font.BOLD,24));
+			message = new JLabel("This is done once. Afterwards, time moves only with +1 minute.",SwingConstants.LEFT);
+			message.setFont(new Font("Arial",Font.PLAIN,14));
+			dateTitle = new JLabel ("Date",SwingConstants.LEFT);
+			timeTitle = new JLabel ("Time (24-hour)",SwingConstants.LEFT);
+			date = new JSpinner( new SpinnerDateModel());
+			date.setEditor(new JSpinner.DateEditor(date,"dd/MM/yyyy"));
+			date.setPreferredSize(new Dimension(375,45));
+			JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			datePanel.add(date);
+			time = new JSpinner( new SpinnerDateModel());
+			time.setEditor(new JSpinner.DateEditor(time,"HH:mm"));
+			time.setPreferredSize(new Dimension(375,45));
+			JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			timePanel.add(time);
+			startClock = new JButton("Start clock");
+			startClock.setPreferredSize(new Dimension(120,35));
+			startClock.setBackground(new Color(70,120,200));
+			startClock.setForeground(Color.WHITE);
+			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			buttonPanel.add(startClock);
+			
+			//Setting the layout of the pop-up
+			GridLayout Layout = new GridLayout(7,2);
+			
+			setLayout(Layout);
+			add(title);
+			add(new JLabel());
+			add(message);
+			add(new JLabel());
+			add(dateTitle);
+			add(timeTitle);
+			add(datePanel);
+			add(timePanel);
+			add(new JLabel());
+			add(new JLabel());
+			add(new JLabel());
+			add(buttonPanel);
+			add(new JLabel());
+			add(new JLabel());
+			
+			startClock.addActionListener(this);
+			
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			setSize(800,400);
+			setVisible(true);
+			 }
 }
