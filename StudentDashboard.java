@@ -485,11 +485,19 @@ public class StudentDashboard extends JFrame implements ActionListener {
         //refresh the dashboard after the cancellation window closes
         cancellationWindow.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
-                //clear the reference so another cancellation window can be opened
-                cancellationWindow = null;
-                if (isDisplayable()) refreshAll();
-            }
+        public void windowClosed(WindowEvent e) {
+        cancellationWindow = null;
+    
+        // Save only if the job was cancelled.
+        if (job.getStatus() == Job.Status.CANCELLED
+            && fileManager != null) {
+        fileManager.saveWithMessage(StudentDashboard.this);
+    }
+
+    if (isDisplayable()) {
+        refreshAll();
+    }
+}
         });
         cancellationWindow.showCancelDialog();
     }
