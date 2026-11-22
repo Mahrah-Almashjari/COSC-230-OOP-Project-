@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.io.*;
 
 /** Administrator screens. Domain changes go through AccountService/Scheduler/models. */
 public class AdminDashboard extends JFrame implements ActionListener {
@@ -92,7 +91,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         };
         clock.addWindowListener(clockListener);
         refreshAll();
-        // Display refresh only. Time advances only through the +1 minute button.
+        // Display refresh only. Time advances solely through the +1 minute button.
         refreshTimer = new Timer(500, e -> refreshAll());
         refreshTimer.start();
     }
@@ -101,7 +100,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
     public void setSaveAction(Runnable saveAction) {
         this.saveAction = saveAction;
     }
-    //create header for screen
+
     private JPanel createHeader() {
         JPanel header = new JPanel(new BorderLayout(12, 8));
         header.setBackground(Color.WHITE);
@@ -157,7 +156,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         overview.add(sections, BorderLayout.CENTER);
         return overview;
     }
-    //interface for the request panel
+
     private JPanel createRequestsPanel() {
         JPanel panel = paddedPanel(new BorderLayout(10, 12));
         JPanel filters = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -187,7 +186,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         panel.add(actions, BorderLayout.SOUTH);
         return panel;
     }
-    //interface for student panel
+
     private JPanel createStudentsPanel() {
         JPanel panel = paddedPanel(new BorderLayout(10, 12));
         JPanel top = new JPanel();
@@ -245,7 +244,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         panel.add(buttonRow(studentDetailsButton, cancelStudentButton), BorderLayout.SOUTH);
         return panel;
     }
-    //interface for all jobs panel
+
     private JPanel createAllJobsPanel() {
         JPanel panel = paddedPanel(new BorderLayout(10, 12));
         JPanel search = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -493,12 +492,13 @@ public class AdminDashboard extends JFrame implements ActionListener {
         cancellationWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                cancellationWindow = null;
-                if (isDisplayable()) {
-                    if (previous != Job.Status.CANCELLED && job.getStatus() == Job.Status.CANCELLED)
-                        afterChange(job.getJobId() + " cancelled.");
-                    else refreshAll();
-                }
+            	cancellationWindow = null;
+            	if (previous != Job.Status.CANCELLED
+            	        && job.getStatus() == Job.Status.CANCELLED) {
+            	    afterChange(job.getJobId() + " cancelled.");
+            	} else if (isDisplayable()) {
+            	    refreshAll();
+            	}
             }
         });
         cancellationWindow.showCancelDialog();
@@ -565,11 +565,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
         try {
             if (source == logoutButton) logout();
             else if (source == setupButton) {
-                // Display the existing clock setup form.
-                if (clock.getDateTime() == null) {
-                    clock.setVisible(true);
-                    clock.toFront();
-                }
+                clock.showSetupWindow();
             }
             else if (source == advanceButton) {
                 scheduler.advanceMinute();
