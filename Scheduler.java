@@ -13,6 +13,25 @@ public class Scheduler {
 	private Preferences prefs = Preferences.userNodeForPackage(Scheduler.class);
 	private int busyGpuCount=0;
 	Map<Job, LocalDateTime> start = new HashMap<>();
+
+	public Job submit(Student student, String title, String application, String description, Job.TaskSize size) {
+		LocalDateTime now = clock.getDateTime();
+		if (now == null) {
+			throw new IllegalStateException("The simulation clock has not been initialized.");
+		}
+
+		Job job = new Job(
+				nextJobNumber,
+				student,
+				title,
+				application,
+				description,
+				size,
+				now);
+
+		submit(job); 
+		return job;
+	}
 	
 	//Creating the GPU objects in the array
 	public Scheduler(SimulationClock Clock) {
