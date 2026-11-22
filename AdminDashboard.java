@@ -604,19 +604,20 @@ public class AdminDashboard extends JFrame implements ActionListener {
                 allocationMinutes.setValue(selectedStudent.getAllowance().getAllocated());
                 refreshAll();
             } else if (source == grantButton) {
-            	// Grant time and record the current simulation time.
-                accountService.grantTime(
-                        admin,
-                        selectedStudent,
-                        readMinutes(grantMinutes),
-                        grantReasonField.getText(),
-                        clock.getDateTime()
-                );
+            // Pass simulation time so the grant history records when it happened.
+            accountService.grantTime(
+            admin,
+            selectedStudent,
+            readMinutes(grantMinutes),
+            grantReasonField.getText(),
+            clock.getDateTime()
+        );
 
-                grantReasonField.setText("");
-                afterChange("Extra time granted to "
-                        + selectedStudent.getStudentId() + ".");
-            } else if (source == allocationButton) {
+            grantReasonField.setText("");
+            afterChange("Extra time granted to "
+            + selectedStudent.getStudentId() + ".");
+            }
+                 else if (source == allocationButton) {
                 accountService.setAllocation(admin, selectedStudent, readMinutes(allocationMinutes), allocationReasonField.getText());
                 allocationReasonField.setText("");
                 afterChange("Allocation adjusted for " + selectedStudent.getStudentId() + ".");
