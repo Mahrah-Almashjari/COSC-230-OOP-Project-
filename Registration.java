@@ -121,9 +121,14 @@ public class Registration extends JFrame implements ActionListener {
 
             try {
                 // AccountService checks duplicates. AccessRequest validates fields.
+                
                 accountService.register(studentId, name, email, phone,
-                        new String(password));
+                new String(password));
 
+                // Save the new pending request.
+                if (fileManager != null) {
+                    fileManager.saveWithMessage(this);
+                }
       
                 statusLabel.setText("Request submitted. Status: Pending.");
                 submitButton.setEnabled(false);
