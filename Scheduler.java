@@ -187,6 +187,46 @@ public class Scheduler {
 	public GPU[] getGpus() {
     return gpus.clone();
 }
-```
+	
+//Restore assignments directly without starting jobs or charging allowance again.
+	 public void loadStorageState(ObjectInputStream in, long minimumNextId)
+	         throws IOException, ClassNotFoundException {
+	     Object savedQueue = in.readObject();
+	     Object savedGpus = in.readObject();
+	     int savedBusy = in.readInt();
+	     long savedNextId = in.readLong();
+
+	     if (!(savedQueue instanceof List<?>) || !(savedGpus instanceof GPU[])
+	             || savedBusy < 0 || savedNextId <= 0) {
+	         throw new IOException("Invalid saved scheduler data.");
+	     }
+
+	     List<Job> restoredQueue = new ArrayList<>();
+	     for (Object value : (List<?>) savedQueue) {
+	         if (!(value instanceof Job) || ((Job) value).getStatus() != Job.Status.QUEUED
+	                 || restoredQueue.contains(value)) {
+	             throw new IOException("Invalid job in saved waiting queue.");
+	         }
+	         restoredQueue.add((Job) value);
+	     }
+	     GPU[] restoredGpus = (GPU[]) savedGpus;
+	     if (restoredGpus.length != 4) {
+	         throw new IOException("The saved application must contain four GPUs.");
+	     }
+	     for (int i = 0; i < restoredGpus.length; i++) {
+	         GPU gpu = restoredGpus[i];
+	         if (gpu == null || gpu.getId() != i + 1
+	                 || (!gpu.isFree() && (gpu.getCurrentJob().getStatus() != Job.Status.RUNNING
+	                 || !Integer.valueOf(gpu.getId()).equals(gpu.getCurrentJob().getAssignedGpuId())))) {
+	             throw new IOException("Invalid saved GPU assignment.");
+	         }
+	     }
+	     restoredQueue.sort(null);
+	     queue = restoredQueue;
+	     gpus = restoredGpus;
+	     busyGpuCount = savedBusy;
+	     nextJobNumber = Math.max(savedNextId, minimumNextId);
+	     start.clear(); // Predictions are recalculated from restored jobs and clock.
+	 }
 
 }
