@@ -97,19 +97,34 @@ public class Login extends JFrame implements ActionListener{
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 	}
-	
 	public static void main(String[] args) {
+    SwingUtilities.invokeLater(() -> {
 		//initialize accounts and requests array to contain 100 values each, initially null
-		User[] accounts = new User[100];
-	    AccessRequest[] requests = new AccessRequest[100];
+        User[] accounts = new User[100];
+        AccessRequest[] requests = new AccessRequest[100];
+        SimulationClock clock = new SimulationClock(false);
+        Scheduler scheduler = new Scheduler(clock);
+        FileManager files = new FileManager(accounts, requests, scheduler, clock);
 
-		//assign first account in array to administrator
-		accounts[0] = new Administrator();
+        try {
+            if (!files.load()) {
+                // First run only. Never replace loaded accounts with fresh ones.
+                accounts[0] = new Administrator();
+            }
+        } catch (IOException | ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Could not load data/gpu-state.dat.\n" + ex.getMessage()
+                    + "\nThe file was not loaded. Fix it or restore a backup, then restart.",
+                    "File error", JOptionPane.ERROR_MESSAGE);
+            clock.dispose();
+            return; // Do not start empty and accidentally overwrite a damaged file.
+        }
+				//Shared account logic used by this login window.
 
-		//Shared account logic used by this login window.
-	    AccountService service = new AccountService(accounts, requests);
-	    new Login(service);
-	}
+        AccountService service = new AccountService(accounts, requests);
+        new Login(service, scheduler, clock, files);
+    });
+}
 	
 	// Handle button clicks.
 	@Override
