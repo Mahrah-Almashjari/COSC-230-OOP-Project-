@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 //Entry point login page shared by students and administrator
 public class Login extends JFrame implements ActionListener{
