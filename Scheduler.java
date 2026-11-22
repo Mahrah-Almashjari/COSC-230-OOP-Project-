@@ -14,6 +14,7 @@ public class Scheduler {
 	private int busyGpuCount=0;
 	Map<Job, LocalDateTime> start = new HashMap<>();
 
+	//creates job then calls submit(job) method
 	public Job submit(Student student, String title, String application, String description, Job.TaskSize size) {
 		LocalDateTime now = clock.getDateTime();
 		if (now == null) {
@@ -169,5 +170,18 @@ public class Scheduler {
 			freeAt[g] = freeAt[g].plusMinutes(job.getEstimatedDuration());
 		}
 	}
+
+	//returns predicted start time
+	public LocalDateTime getPredictedStartTime(Job job) {
+    	if (job == null) throw new IllegalArgumentException("Job is required.");
+    	if (job.getStatus() != Job.Status.QUEUED) return job.getStartTime();
+    	predict();
+    	LocalDateTime result = start.get(job);
+    	if (result == null) {
+      	  throw new IllegalStateException("This job is not in the waiting queue.");
+    	}
+    	return result;
+	}
+```
 
 }
