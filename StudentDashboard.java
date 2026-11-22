@@ -443,28 +443,39 @@ public class StudentDashboard extends JFrame implements ActionListener {
     }
 
     private void handleCancelJob() {
+        // Get the row selected by the user
         int row = jobsTable.getSelectedRow();
+        //return if no job is selected.
         if (row < 0) {
             JOptionPane.showMessageDialog(this, "Please select a job to cancel.");
             return;
         }
-        int modelRow = jobsTable.convertRowIndexToModel(row);
-        String jobId = (String) tableModel.getValueAt(modelRow, 0);
+
+        //read the job ID and find it in this student's history
+        String jobId = (String) tableModel.getValueAt(row, 0);
+        
         Job job = student.findJob(jobId);
+
+        //allow cancellation only for queued or running jobs
         if (job == null || (job.getStatus() != Job.Status.QUEUED
                 && job.getStatus() != Job.Status.RUNNING)) {
             JOptionPane.showMessageDialog(this, "Only queued or running jobs can be cancelled.");
             return;
         }
+
+        //bring existing cancellation window forward instead of opening another
         if (cancellationWindow != null && cancellationWindow.isDisplayable()) {
             cancellationWindow.toFront();
             return;
         }
-        // Reuse the existing cancellation window and scheduler.cancel(...) API.
+        // Create the cancellation window using the selected job and shared objects.        
         cancellationWindow = new GUI(job, scheduler, student, clock);
+
+        //refresh the dashboard after the cancellation window closes
         cancellationWindow.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
+                //clear the reference so another cancellation window can be opened
                 cancellationWindow = null;
                 if (isDisplayable()) refreshAll();
             }
@@ -472,32 +483,41 @@ public class StudentDashboard extends JFrame implements ActionListener {
         cancellationWindow.showCancelDialog();
     }
 
+    //close the dashboard and return to existing login screen
     private void logout() {
         dispose();
         loginWindow.setVisible(true);
     }
 
+    //clean up dashboard resources before closing the window.
     @Override
     public void dispose() {
+        //stop automatic refresh when the dashboard closes.
         if (refreshTimer != null) refreshTimer.stop();
+
+        // Close any associated cancellation window
         if (cancellationWindow != null) cancellationWindow.dispose();
+
+        //call the inherited method to close and release the dashboard window
         super.dispose();
     }
 
+    //handle button clicks and dropdown selection change
     @Override
     public void actionPerformed(ActionEvent e) {
+        //update the displayed duration when the task size changes
         if (e.getSource() == sizeBox) {
             Job.TaskSize selected = (Job.TaskSize) sizeBox.getSelectedItem();
             if (selected != null) {
                 durationLabel.setText("Duration: " + selected.getMinutes() + " minutes");
             }
-        } else if (e.getSource() == submitJobButton) {
+        } else if (e.getSource() == submitJobButton) { //validate and submit the entered job details.
             handleSubmitJob();
-        } else if (e.getSource() == searchButton || e.getSource() == statusFilter) {
+        } else if (e.getSource() == searchButton || e.getSource() == statusFilter) { //rebuild table using current search and status filters
             refreshJobsTable();
-        } else if (e.getSource() == cancelJobButton) {
+        } else if (e.getSource() == cancelJobButton) { //open cancellation for the selected job.
             handleCancelJob();
-        } else if (e.getSource() == logoutButton) {
+        } else if (e.getSource() == logoutButton) { //return the user to login
             logout();
         }
     }
