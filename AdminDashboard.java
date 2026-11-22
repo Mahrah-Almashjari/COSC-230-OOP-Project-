@@ -13,7 +13,7 @@ public class AdminDashboard extends JFrame implements ActionListener {
     private final Scheduler scheduler;
     private final SimulationClock clock;
     private final JFrame loginWindow;
-    private Runnable saveAction;
+    private FileManager fileManager;
     private Timer refreshTimer;
     private GUI cancellationWindow;
     private WindowAdapter clockListener;
