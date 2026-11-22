@@ -5,6 +5,7 @@ import model.Student;
 import model.User;
 import java.util.Arrays;
 import java.util.Locale;
+import java.time.*;
 
 /** Login and registration logic using shared arrays; no Swing code. */
 public class AccountService {
@@ -213,10 +214,26 @@ public class AccountService {
         admin.reject(request);
     }
 
-    public void grantTime(Administrator admin, Student student, int minutes, String reason) {
-        requireStudent(admin, student);
-        admin.grantTime(student, minutes, reason);
+    public void grantTime(Administrator admin, Student student,
+                      int minutes, String reason, LocalDateTime now) {
+    requireStudent(admin, student);
+
+    // Validate the original reason before adding timestamp information.
+    if (reason == null || reason.trim().isEmpty()) {
+        throw new IllegalArgumentException("A grant reason is required.");
     }
+
+    if (now == null) {
+        throw new IllegalStateException(
+                "Initialize the simulation clock before granting time.");
+    }
+
+    // The existing allowance model stores this text in its grant history.
+    String recordedReason = reason.trim()
+            + " | Simulation time: " + Job.formatTime(now);
+
+    admin.grantTime(student, minutes, recordedReason);
+}
 
     public void setAllocation(Administrator admin, Student student, int minutes, String reason) {
         requireStudent(admin, student);
