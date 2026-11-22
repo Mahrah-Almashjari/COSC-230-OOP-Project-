@@ -12,7 +12,6 @@ public class Scheduler {
 	private GPU[] gpus = new GPU[4];
 	private SimulationClock clock;
 	private double utilization, simulatedMinutes;
-	busyGpuCount = 0;
 	private int busyGpuCount=0;
 	Map<Job, LocalDateTime> start = new HashMap<>();
 
@@ -90,7 +89,6 @@ public class Scheduler {
 						gpus[i].assign(newJob, clock.getDateTime());
 					}
 		}
-		prefs.putInt("busyGpuMinutes", busyGpuCount);
 	}
 	
 	//Cancelling the job
