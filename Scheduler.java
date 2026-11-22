@@ -12,6 +12,7 @@ public class Scheduler {
 	private double utilization, simulatedMinutes;
 	private Preferences prefs = Preferences.userNodeForPackage(Scheduler.class);
 	private int busyGpuCount=0;
+	Map<Job, LocalDateTime> start = new HashMap<>();
 	
 	//Creating the GPU objects in the array
 	public Scheduler(SimulationClock Clock) {
@@ -92,4 +93,53 @@ public class Scheduler {
 			return utilization;
 		}
 	}
+	
+	//For the predictions.
+	public LocalDateTime[] copyOfGpuFreeTimes() {
+		LocalDateTime[] freeGPUTimes = new LocalDateTime[4];
+		for (int i =  0; i<4;i++) {
+			if (gpus[i].isFree()) {
+				freeGPUTimes[i]=clock.getDateTime();
+			}
+			else {
+				Job job = gpus[i].getCurrentJob();
+				freeGPUTimes[i] = job.getExpectedFinishTime();
+			}
+		}
+		return freeGPUTimes;
+	}
+	
+	//For finding the earliest index
+	public int earliest(LocalDateTime[] freeAt) {
+		int earliest = 0;
+		for (int i = 1; i<4;i++) {
+			if (freeAt[i].isBefore(freeAt[earliest])) {
+				earliest = i;
+			}
+			else if (freeAt[i].equals(freeAt[earliest])) {
+				if (gpus[i].getId()<gpus[earliest].getId()) {
+					earliest=i;
+				}
+			}
+		}
+
+		return earliest;
+	}
+	
+	public List<Job> queueInFcfsOrder() {
+		return new ArrayList<>(queue);
+	}
+	
+	//Predicting when a queued job starts
+	public void predict() {
+		LocalDateTime[] freeAt = copyOfGpuFreeTimes();
+		start.clear();
+		
+		for (Job job : queueInFcfsOrder()) {
+			int g = earliest(freeAt); // tie: lowest ID
+			start.put(job, freeAt[g]);
+			freeAt[g] = freeAt[g].plusMinutes(job.getEstimatedDuration());
+		}
+	}
+
 }
