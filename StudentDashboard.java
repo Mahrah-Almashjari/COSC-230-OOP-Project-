@@ -242,7 +242,7 @@ public class StudentDashboard extends JFrame implements ActionListener {
                 "GPU", "Submitted", "Start", "Finish", "Wait", "Runtime", "Charged", "Result"
         };
 
-        tableModel = new DefaultTableModel(columns, 0) 
+        tableModel = new DefaultTableModel(columns, 0);
         jobsTable = new JTable(tableModel);
         jobsTable.setDefaultEditor(Object.class, null);
         
