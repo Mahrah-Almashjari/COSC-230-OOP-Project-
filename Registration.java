@@ -4,6 +4,7 @@ import java.awt.event.*;
 import java.io.*;
 
 public class Registration extends JFrame implements ActionListener {
+    
 
     private final AccountService accountService;
 
@@ -11,6 +12,13 @@ public class Registration extends JFrame implements ActionListener {
     private JPasswordField passwordField;
     private JButton submitButton, backButton;
     private JLabel statusLabel;
+
+    private FileManager fileManager;
+
+    // Login supplies the same file manager to every screen.
+    public void setFileManager(FileManager fileManager) {
+    this.fileManager = fileManager;
+}
 
     public Registration(AccountService accountService) {
         if (accountService == null) {
