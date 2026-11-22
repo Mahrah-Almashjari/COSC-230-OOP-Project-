@@ -5,6 +5,7 @@ import java.time.*;
 import java.util.prefs.Preferences;
 import java.util.Date;
 import java.text.ParseException;
+import java.io.*;
 
 public class SimulationClock extends JFrame implements ActionListener {
 	
@@ -101,7 +102,7 @@ public class SimulationClock extends JFrame implements ActionListener {
 			try {
 				date.commitEdit();
 				time.commitEdit();
-				LocalTime Time = ((Date) time.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+				LocalTime Time = ((Date) time.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalTime().withSecond(0).withNano(0);				
 				LocalDate Date = ((Date) date.getValue()).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 				DateTime = LocalDateTime.of(Date, Time);
 				prefs.put("time", DateTime.toString());
@@ -115,5 +116,36 @@ public class SimulationClock extends JFrame implements ActionListener {
 			
 		}
 	}
+
+	//A clean clock for file-based startup; do not read old Preferences or open setup.
+			 public SimulationClock(boolean loadOldPreferences) {
+			     if (loadOldPreferences) {
+			         String saved = prefs.get("time", null);
+			         String savedInitial = prefs.get("initialTime", null);
+			         if (saved != null) DateTime = LocalDateTime.parse(saved);
+			         if (savedInitial != null) initialDateTime = LocalDateTime.parse(savedInitial);
+			         if (DateTime == null) showSetupWindow();
+			     }
+			 }
+			 
+			 //Restore the exact saved time. Real time spent with the app closed is ignored.
+			 public void restoreStorageTime(LocalDateTime current, LocalDateTime initial) {
+			     if ((current == null) != (initial == null)
+			             || (current != null && (initial.isAfter(current)
+			             || current.getSecond() != 0 || current.getNano() != 0
+			             || initial.getSecond() != 0 || initial.getNano() != 0))) {
+			         throw new IllegalArgumentException("Invalid stored simulation time.");
+			     }
+			     DateTime = current;
+			     initialDateTime = initial;
+			 }
+			 
+			 public void showSetupWindow() {
+				    if (DateTime != null) return; // Initialized clocks cannot be reset here.
+				    if (startClock != null) {
+				        setVisible(true);
+				        toFront();
+				        return;
+				    }
 
 }
