@@ -7,7 +7,7 @@ import java.util.Arrays;
 import javax.swing.JOptionPane;
 import model.*;
 
-/** Saves the connected application data, not the Swing windows. */
+// Saves the connected application data, not the Swing windows
 public class FileManager {
     private static final String FORMAT = "GPU_PROJECT_1";
     private final File file;
@@ -42,7 +42,7 @@ public class FileManager {
         }
         File temporary = new File(file.getPath() + ".tmp");
 
-        // One stream preserves references shared by accounts, requests, jobs and GPUs.
+        // one stream preserves references shared by accounts, requests, jobs and GPUs.
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(temporary))) {
             out.writeUTF(FORMAT);
             out.writeObject(accounts);
@@ -52,11 +52,11 @@ public class FileManager {
             scheduler.saveStorageState(out);
         }
 
-        // Replace the old file only after writing and closing the new one successfully.
+        //replace the old file only after writing and closing the new one successfully
         Files.move(temporary.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
-    /** False means first run: there is no saved file. Other failures are errors. */
+    //False means first run: there is no saved file. Other failures are errors. 
     public boolean load() throws IOException, ClassNotFoundException {
         if (!file.exists()) return false;
 
