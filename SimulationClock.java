@@ -10,9 +10,9 @@ import java.io.*;
 public class SimulationClock extends JFrame implements ActionListener {
 	
 	//Setting the private attributes for the clock
-	JLabel title, message, dateTitle, timeTitle;
-	JSpinner date, time; 
-	JButton startClock;
+	private JLabel title, message, dateTitle, timeTitle;
+	private JSpinner date, time; 
+	private JButton startClock;
 	private LocalDateTime DateTime, initialDateTime;
 	private Preferences prefs = Preferences.userNodeForPackage(SimulationClock.class);
 	
