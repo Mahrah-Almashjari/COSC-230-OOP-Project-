@@ -120,7 +120,7 @@ public class SimulationClock extends JFrame implements ActionListener {
 			startClock = new JButton("Start clock");
 			startClock.setPreferredSize(new Dimension(120,35));
 			startClock.setBackground(new Color(70,120,200));
-			startClock.setForeground(Color.WHITE);
+			startClock.setForeground(Color.BLACK);
 			JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			buttonPanel.add(startClock);
 			
