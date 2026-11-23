@@ -27,10 +27,10 @@ public class StudentDashboard extends JFrame implements ActionListener {
     private JLabel timeLabel;
     private JButton logoutButton;
 
-    // Balance labels
+    //balance labels
     private JLabel allocatedValue, usedValue, reservedValue, availableValue;
 
-    // Job submission form components
+    //job submission form components
     private JTextField titleField, appField;
     private JTextArea descriptionArea;
     private JComboBox<Job.TaskSize> sizeBox;
