@@ -2,16 +2,18 @@ import javax.swing.*;
 import java.io.IOException;
 import java.awt.*;
 import java.awt.event.*;
+// Login window shared by students and the administrator.
 public class Login extends JFrame implements ActionListener{
 	private final FileManager fileManager;
 	private final AccountService accountService;
-	JButton loginButton, registerButton;
-	JTextField usernameField; JPasswordField passwordField;
-	JLabel usernameLabel, passwordLabel, messageLabel;
+	private JButton loginButton, registerButton;
+	private JTextField usernameField; JPasswordField passwordField;
+	private JLabel usernameLabel, passwordLabel, messageLabel;
 	private final Scheduler scheduler;
 	private final SimulationClock clock;
 	public Login(AccountService accountService, Scheduler scheduler,
             SimulationClock clock, FileManager fileManager) {
+	// Store the shared service, scheduler, clock, and file manager.
    this.accountService = accountService;
    this.scheduler = scheduler;
    this.clock = clock;
@@ -27,7 +29,7 @@ public class Login extends JFrame implements ActionListener{
 		
 		loginButton.addActionListener(this);
 		registerButton.addActionListener(this);
-		
+		// Arrange the login components vertically.
 		JPanel form = new JPanel();
 		form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
 
@@ -59,12 +61,13 @@ public class Login extends JFrame implements ActionListener{
 		
 		form.add(loginButton);
 		form.add(Box.createVerticalStrut(12));
+		// Display the registration option in one row.
 		JPanel registerRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 		registerRow.add(new JLabel("New student?"));
 		registerRow.add(registerButton);
 
 		form.add(registerRow);
-		
+		//reserve space for login error messages.
 		messageLabel = new JLabel(" ");
 		messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		messageLabel.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
@@ -73,14 +76,11 @@ public class Login extends JFrame implements ActionListener{
 		
 		setTitle("GPU Management - Login");
 
-		// Match Registration's white background.
 		form.setBackground(Color.WHITE);
 		registerRow.setOpaque(false);
 
-		// Match Registration's heading.
 		title.setFont(new Font("SansSerif", Font.BOLD, 22));
 
-		// Match Registration's input sizes.
 		Dimension fieldSize = new Dimension(420, 34);
 
 		usernameField.setPreferredSize(fieldSize);
@@ -102,9 +102,12 @@ public class Login extends JFrame implements ActionListener{
 	}
 	
 	public static void main(String[] args) {
+		//Start the Swing interface on its event-handling thread.
 	    SwingUtilities.invokeLater(() -> {
+			//Initialize arrays for accounts and requests, contain null currrently
 	        User[] accounts = new User[100];
 	        AccessRequest[] requests = new AccessRequest[100];
+			// Create the clock without opening setup or reading old settings.
 	        SimulationClock clock = new SimulationClock(false);
 	        Scheduler scheduler = new Scheduler(clock);
 	        FileManager files = new FileManager(accounts, requests, scheduler, clock);
@@ -114,6 +117,7 @@ public class Login extends JFrame implements ActionListener{
 	                // First run only. Never replace loaded accounts with fresh ones.
 	                accounts[0] = new Administrator();
 	            }
+				// Report loading failures and stop startup.
 	        } catch (IOException | ClassNotFoundException ex) {
 	            JOptionPane.showMessageDialog(null,
 	                    "Could not load data/gpu-state.dat.\n" + ex.getMessage()
@@ -140,7 +144,7 @@ public class Login extends JFrame implements ActionListener{
 	        String username = usernameField.getText().trim();
 	        char[] password = passwordField.getPassword();
 
-	        if (username.isEmpty() || password.length == 0) {
+	        if (username.isEmpty() || password.length == 0) { //reject missing credentials
 	            JOptionPane.showMessageDialog(this, "Please enter your username and password.");
 	            return;
 	        }
@@ -166,7 +170,7 @@ public class Login extends JFrame implements ActionListener{
                     (Student) user, scheduler, clock, this);
             dashboard.setFileManager(fileManager);
             dashboard.setVisible(true);
-            setVisible(false);
+            setVisible(false); //hide Login page so dashboard can reopen it on logout
         }
 		}
 }}
