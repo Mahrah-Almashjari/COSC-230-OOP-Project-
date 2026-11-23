@@ -253,8 +253,6 @@ public class StudentDashboard extends JFrame implements ActionListener {
         jobsTable = new JTable(tableModel);
         jobsTable.setDefaultEditor(Object.class, null);
         
-
-        jobsTable = new JTable(tableModel);
         jobsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jobsTable.setRowHeight(24);
         jobsTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
