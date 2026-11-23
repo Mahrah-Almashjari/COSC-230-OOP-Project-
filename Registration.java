@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+//student account-request window.
 public class Registration extends JFrame implements ActionListener {
     
 
@@ -26,7 +27,7 @@ public class Registration extends JFrame implements ActionListener {
         this.accountService = accountService;
 
         setTitle("GPU Management - Registration");
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE); //close registration without exiting the application.
 
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
@@ -69,7 +70,8 @@ public class Registration extends JFrame implements ActionListener {
         buttons.add(backButton);
         form.add(buttons);
         form.add(Box.createVerticalStrut(15));
-
+        
+        // Reserve a label for registration status messages.
         statusLabel = new JLabel(" ");
         statusLabel.setForeground(new Color(30, 120, 50));
         statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -95,6 +97,7 @@ public class Registration extends JFrame implements ActionListener {
         form.add(Box.createVerticalStrut(14));
     }
 
+    //Handle registration and back-button clicks
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
