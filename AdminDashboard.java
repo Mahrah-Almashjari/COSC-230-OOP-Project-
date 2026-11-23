@@ -6,7 +6,7 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-/** Administrator screens. Domain changes go through AccountService/Scheduler/models. */
+//Administrator screens. Domain changes go through AccountService/Scheduler/models
 public class AdminDashboard extends JFrame implements ActionListener {
     private final Administrator admin;
     private final AccountService accountService;
