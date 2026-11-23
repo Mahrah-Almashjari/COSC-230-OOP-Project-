@@ -1,15 +1,11 @@
-import model.AccessRequest;
-import model.Administrator;
-import model.Job;
-import model.Student;
-import model.User;
+
 import java.util.Arrays;
 import java.util.Locale;
 import java.time.*;
 import java.io.*;
 
 
-/** Login and registration logic using shared arrays; no Swing code. */
+// Login and registration logic using shared arrays; no Swing code. 
 public class AccountService {
 
     private final User[] accounts;
